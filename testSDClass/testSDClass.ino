@@ -8,27 +8,23 @@
     #include "SD.h"
     #include "ASCEND_Data.h"
 
-// OBJECTS
-    ASCEND_Data sd;
-
 
 void setup() {
     Serial.begin(9600);
 
-    sd.setPin(8);
     sd.setFilename("testSD.txt");
-    sd.init();
+    SD_init();
 
     delay(1000);
 
     Serial.print("Is SD available?\t");
-    Serial.println(sd.available());
+    Serial.println();
 }
 
 void loop() {
     float thing[] = {1, 2, 3, 4, 5};
-    sd.add(thing);
-    sd.save();
+    SD_add(thing);
+    SD_save();
 
     delay(1000);
 }

@@ -1,46 +1,103 @@
 // Stephen Flores
-// ASCEND_Data.h
-// Created 2017/2/1
-// Shall replace old function-driven thing with object implementation!
+// SDWrite.h
+// Created 2017/2/2
+// Function-driven SDWrite
 
-#ifndef ASCEND_Data_h
-#define ASCEND_Data_h
+#ifndef SDWrite_h
+#define SDWrite_h
 
-#ifndef SD_H
-#include "SD.h"
-#endif
+#include <SPI.h>
+#include <SD.h>
 
-#ifndef SPI_H
-#include "SPI.h"
-#endif
+// DEFINITIONS: EDIT THESE
+#define filename "power.csv"
+#define headers "Time, t1, t2"
+#define sdPin 8
 
 
-class ASCEND_Data {
-public:
-    ASCEND_Data();
-    void init();
-    void setFilename(String name);
-    void setHeaders(String headers);
-    void setPin(int pin);
+// VARIABLES
+File dataFile;
+String dataString;
 
-    void add(float arr[]);   // Add arrays of floats
-    void add(int i);         // Add a single int
-    void add(float f);       // Add a single float
-    void add(String s);      // Add a string, like a log message or something
+// ERROR PRINTING
+void SD_error() {
+    Serial.println("\t\t\t*** Error: cannot access SD ***");
+}
 
-    void save();             // Commit changes to disk
-    void clear();            // Reset dataString without saving.
-    bool available();        // Make sure the SD card is available
+// DATA MANIPULATION
+void SD_add(int i) {
+    dataString += String(i) + ", ";
+}
 
-private:
-    int logCounter;
-    String filename;
-    int sdPin;
-    String dataString;
+void SD_add(String s) {
+    dataString += s + ", ";
+}
 
-    File dataFile;
+void SD_add(float f) {
+    dataString += String(f) + ", ";
+}
 
-    void error();
-};
+void SD_add(float arr[]) {
+    int size = sizeof(arr);
+
+    for (int i = 0; i <= size; i++) {
+        dataString += String(arr[i]) + ", ";
+    }
+}
+
+void SD_save() {
+    dataFile = SD.open(filename, FILE_WRITE);
+    if (dataFile) {
+        dataFile.println(dataString);
+        dataString = "";
+        dataFile.close();
+    }
+}
+
+bool SD_available() {
+    dataFile = SD.open(filename);
+    if (dataFile) {
+        dataFile.close();
+        return true;
+    } else {
+        SD_error();
+        return false;
+    }
+}
+
+
+// INITIALIZER
+void SD_init() {
+    // *** SD setup:
+        Serial.println("Initializing SD card...");
+
+        int tries = 3;
+        while (!SD.begin(8) && tries > 0) {
+            Serial.print(".");
+            tries--;
+            delay(1000);
+        }
+        Serial.println("Attempted initialization on pin 8");
+
+        dataFile = SD.open(filename, FILE_WRITE);
+        if (dataFile) {
+            Serial.println("Writing SD headers...");
+            dataFile.println("Time, t1, t2");
+            dataFile.close();
+        } else {
+            Serial.println("File could not be opened. Headers not written");
+        }
+
+        dataFile = SD.open(filename);
+        Serial.println("Checking if file is accessible...");
+        delay(100);
+        if (dataFile) {
+            Serial.println("File is accessible");
+            dataFile.close();
+        } else {
+            Serial.println("***** Error: file inaccessible *****");
+        }
+}
+
 
 #endif
