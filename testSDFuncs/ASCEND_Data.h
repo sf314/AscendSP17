@@ -10,14 +10,19 @@
 #include <SD.h>
 
 // DEFINITIONS: EDIT THESE
-#define filename "power.csv"
+#define filename "test.csv"
 #define headers "Time, t1, t2"
-#define sdPin 8
+#define sdPin 10
 
 
 // VARIABLES
 File dataFile;
 String dataString;
+
+// // FILE funcs
+// void SD_setFilename(String s) {
+//     filename = s;
+// }
 
 // ERROR PRINTING
 void SD_error() {
@@ -37,10 +42,12 @@ void SD_add(float f) {
     dataString += String(f) + ", ";
 }
 
-void SD_add(float arr[]) {
-    int size = sizeof(arr);
-
-    for (int i = 0; i <= size; i++) {
+template<size_t N>
+void SD_add(float (&arr)[N]) {
+    //int size = sizeof(arr) / sizeof(arr[0]);
+    size_t size = N;
+    Serial.println("array size" + String(N));
+    for (int i = 0; i < size; i++) {
         dataString += String(arr[i]) + ", ";
     }
 }
@@ -72,12 +79,12 @@ void SD_init() {
         Serial.println("Initializing SD card...");
 
         int tries = 3;
-        while (!SD.begin(8) && tries > 0) {
+        while (!SD.begin(sdPin) && tries > 0) {
             Serial.print(".");
             tries--;
             delay(1000);
         }
-        Serial.println("Attempted initialization on pin 8");
+        Serial.println("Attempted initialization on pin " + String(sdPin));
 
         dataFile = SD.open(filename, FILE_WRITE);
         if (dataFile) {
