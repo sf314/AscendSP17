@@ -7,8 +7,8 @@ ascendMain
 - folder containing flight code for main arduino.
 - subsequent arduinos shall have their code in ascendMain2, etc
 
-SparkFun...-master
-- Library and examples for SparkFun 6DOF IMU
+testIMU
+- Test code and lib for SparkFun IMU
 
 *** HOW TO USE *** 
 All code for use in flight must exist in the
@@ -27,7 +27,9 @@ the main directory, something like
 file must have the same name as the enclosing 
 folder. Once your library is complete, you can
 copy those files over to /ascendMain for 
-integration with the flight code.
+integration with the flight code. Changes 
+made to this library later must be tested
+first then reflected in /ascendMain
 
 If downloading a library from the internet, 
 be sure to include that download in your test
