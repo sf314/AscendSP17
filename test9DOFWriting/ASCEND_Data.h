@@ -10,7 +10,7 @@
 #include <SD.h>
 
 // DEFINITIONS: EDIT THESE
-#define filename "test.csv"
+#define filename "test9dof.csv"
 #define headers "Time, t1, t2"
 #define sdPin 10
 
