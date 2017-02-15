@@ -18,7 +18,9 @@ public:
 
     void begin();
     void update();
+    void useRawOutput(bool use);
 
 private:
     LSM9DS1 sparkfunIMU;
+    bool rawOutput;
 };

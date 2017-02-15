@@ -5,6 +5,9 @@
 #include "Arduino.h"
 #endif
 
+#ifndef _ASCEND_IMU9DOF_h
+#define _ASCEND_IMU9DOF_h
+
 #ifndef SparkFunLSM9DS1_h
 #include "SparkFunLSM9DS1.h"
 #include "SparkFunLSM9DS1.h"
@@ -23,13 +26,11 @@ ASCEND_IMU9DOF::ASCEND_IMU9DOF() {
     sparkfunIMU = LSM9DS1();
     accel = IMU_Vector();
     gyro = IMU_Vector();
+    rawOutput = false;
 }
 
 // BEGIN
 void ASCEND_IMU9DOF::begin() {
-    //sparkfunIMU.settings.device.commInterface = IMU_MODE_I2C;
-    //sparkfunIMU.settings.device.mAddress = LSM9DS1_M;
-    //sparkfunIMU.settings.device.agAddress = LSM9DS1_AG;
     sparkfunIMU.begin();
 }
 
@@ -40,14 +41,40 @@ void ASCEND_IMU9DOF::update() {
     sparkfunIMU.readMag();
     sparkfunIMU.readTemp();
 
-    //accel.x = sparkfunIMU.ax;
-    accel.y = sparkfunIMU.ay;
-    accel.z = sparkfunIMU.az;
-    accel.x = sparkfunIMU.calcAccel(sparkfunIMU.ax);
+    if (rawOutput) {
+        accel.x = sparkfunIMU.ax;
+        accel.y = sparkfunIMU.ay;
+        accel.z = sparkfunIMU.az;
 
-    gyro.x = sparkfunIMU.gx;
-    gyro.y = sparkfunIMU.gy;
-    gyro.z = sparkfunIMU.gz;
+        gyro.x = sparkfunIMU.gx;
+        gyro.y = sparkfunIMU.gy;
+        gyro.z = sparkfunIMU.gz;
 
-    temp = sparkfunIMU.temperature;
+        mag.x = sparkfunIMU.mx;
+        mag.y = sparkfunIMU.my;
+        mag.z = sparkfunIMU.mz;
+
+        temp = sparkfunIMU.temperature;
+    } else {
+        // Accel returns amount in g's
+        accel.x = sparkfunIMU.calcAccel(sparkfunIMU.ax);
+        accel.y = sparkfunIMU.calcAccel(sparkfunIMU.ay);
+        accel.z = sparkfunIMU.calcAccel(sparkfunIMU.az);
+
+        // Gyro returns amount in deg/sec
+        gyro.x = sparkfunIMU.calcGyro(sparkfunIMU.gx);
+        gyro.y = sparkfunIMU.calcGyro(sparkfunIMU.gy);
+        gyro.z = sparkfunIMU.calcGyro(sparkfunIMU.gz);
+
+        // Mag returns amount in gauss (?)
+        mag.x = sparkfunIMU.calcMag(sparkfunIMU.mx);
+        mag.y = sparkfunIMU.calcMag(sparkfunIMU.my);
+        mag.z = sparkfunIMU.calcMag(sparkfunIMU.mz);
+    }
 }
+
+void useRawOutput(bool use) {
+    rawOutput = use;
+}
+
+#endif
