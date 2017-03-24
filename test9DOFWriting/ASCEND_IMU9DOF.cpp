@@ -73,7 +73,7 @@ void ASCEND_IMU9DOF::update() {
     }
 }
 
-void useRawOutput(bool use) {
+void ASCEND_IMU9DOF::useRawOutput(bool use) {
     rawOutput = use;
 }
 

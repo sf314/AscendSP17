@@ -22,5 +22,5 @@ public:
 
 private:
     LSM9DS1 sparkfunIMU;
-    bool rawOutput;
+    bool rawOutput = false;
 };
